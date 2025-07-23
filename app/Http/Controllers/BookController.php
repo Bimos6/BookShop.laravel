@@ -12,21 +12,52 @@ class BookController extends Controller
 
     public function index(Request $request)
     {
-        $sort = $request->get('sort', 'id');
-        $direction = $request->get('direction', 'asc');
+        // Получаем уникальные жанры для фильтра
+        $genres = Book::select('genre')->distinct()->pluck('genre')->filter();
 
-        $books = Book::with('author')
-            ->when($sort === 'author', function($query) use ($direction) {
-                $query->join('authors', 'books.author_id', '=', 'authors.id')
-                    ->orderBy('authors.name', $direction)
-                    ->select('books.*');
-            })
-            ->when($sort !== 'author', function($query) use ($sort, $direction) {
-                $query->orderBy($sort, $direction);
-            })
-            ->paginate(8);
+        // Основной запрос
+        $query = Book::with('author');
 
-        return view('books.index', compact('books'));
+        // Фильтр по жанру
+        if ($request->has('genre') && $request->genre) {
+            $query->where('genre', $request->genre);
+        }
+
+        // Фильтр по страницам
+        if ($request->has('pages') && $request->pages) {
+            switch ($request->pages) {
+                case '0-100':
+                    $query->where('pages', '<=', 100);
+                    break;
+                case '100-300':
+                    $query->whereBetween('pages', [100, 300]);
+                    break;
+                case '300+':
+                    $query->where('pages', '>', 300);
+                    break;
+            }
+        }
+
+        // Сортировка
+        $sort = $request->input('sort', 'id');
+        $direction = $request->input('direction', 'asc');
+
+        $validSorts = ['title', 'author', 'year'];
+        $sort = in_array($sort, $validSorts) ? $sort : 'id';
+        $direction = in_array($direction, ['asc', 'desc']) ? $direction : 'asc';
+
+        $query->when($sort === 'author', function($q) use ($direction) {
+                $q->join('authors', 'books.author_id', '=', 'authors.id')
+                ->orderBy('authors.name', $direction)
+                ->select('books.*');
+            })
+            ->when($sort !== 'author', function($q) use ($sort, $direction) {
+                $q->orderBy($sort, $direction);
+            });
+
+        $books = $query->paginate(3)->appends($request->query());
+
+        return view('books.index', compact('books', 'genres'));
     }
 
     public function create()
