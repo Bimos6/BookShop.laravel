@@ -159,4 +159,17 @@ class BookController extends Controller
         return redirect()->route('books.index')
             ->with('success', 'Книга удалена!');
     }
+
+    public function toggleAdminMode(Request $request)
+    {
+        session(['admin_mode' => $request->admin_mode]);
+        return response()->json(['success' => true]);
+    }
+
+    public function checkAdminMode()
+    {
+        return response()->json([
+            'admin_mode' => session('admin_mode', false)
+        ]);
+    }
 }

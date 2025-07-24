@@ -246,3 +246,49 @@
         width: 100%;
     }
 }
+
+/* Стили для переключателя режимов */
+.admin-switch {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-switch .form-check-input {
+    width: 3em;
+    height: 1.5em;
+    cursor: pointer;
+}
+
+.form-switch .form-check-input:checked {
+    background-color: #198754;
+    border-color: #198754;
+}
+
+.admin-actions {
+    transition: all 0.3s ease;
+}
+
+.admin-actions .btn {
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+}
+
+.admin-mode .admin-actions .btn {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Добавьте в books.css */
+.admin-controls {
+    transition: all 0.3s ease;
+    opacity: 0;
+    height: 0;
+    overflow: hidden;
+}
+
+.admin-mode .admin-controls {
+    opacity: 1;
+    height: auto;
+}

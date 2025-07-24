@@ -4,11 +4,23 @@
 
 @section('content')
 <div class="container py-4">
+    <!-- Переключатель режимов -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>Список книг</h1>
-        <a href="{{ route('books.create') }}" class="btn btn-success">
-            <i class="bi bi-plus-circle"></i> Добавить книгу
-        </a>
+        <div class="d-flex align-items-center gap-3">
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="adminModeSwitch" 
+                       {{ session('admin_mode') ? 'checked' : '' }}>
+                <label class="form-check-label" for="adminModeSwitch">
+                    Режим администратора
+                </label>
+            </div>
+            @if(session('admin_mode'))
+                <a href="{{ route('books.create') }}" class="btn btn-success">
+                    <i class="bi bi-plus-circle"></i> Добавить книгу
+                </a>
+            @endif
+        </div>
     </div>
 
     @if(session('success'))
@@ -120,17 +132,19 @@
                         <a href="{{ route('books.show', $book->id) }}" class="btn btn-sm btn-outline-primary">
                             <i class="bi bi-eye"></i>
                         </a>
-                        <a href="{{ route('books.edit', $book->id) }}" class="btn btn-sm btn-outline-warning">
-                            <i class="bi bi-pencil"></i>
-                        </a>
-                        <form action="{{ route('books.destroy', $book->id) }}" method="POST">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-outline-danger"
-                                    onclick="return confirm('Удалить эту книгу?')">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </form>
+                        @if(session('admin_mode'))
+                            <a href="{{ route('books.edit', $book->id) }}" class="btn btn-sm btn-outline-warning">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <form action="{{ route('books.destroy', $book->id) }}" method="POST">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-outline-danger"
+                                        onclick="return confirm('Удалить эту книгу?')">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -138,7 +152,10 @@
         @empty
         <div class="col-12">
             <div class="alert alert-info">
-                Книги не найдены. <a href="{{ route('books.create') }}">Добавить книгу</a>
+                Книги не найдены. 
+                @if(session('admin_mode'))
+                    <a href="{{ route('books.create') }}">Добавить книгу</a>
+                @endif
             </div>
         </div>
         @endforelse

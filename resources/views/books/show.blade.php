@@ -43,17 +43,19 @@
             </div>
             
             <div class="d-flex flex-wrap gap-2">
-                <a href="{{ route('books.edit', $book->id) }}" class="btn btn-primary px-4">
-                    <i class="bi bi-pencil"></i> Редактировать
-                </a>
-                <form action="{{ route('books.destroy', $book->id) }}" method="POST" class="d-inline">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-danger px-4"
-                            onclick="return confirm('Удалить эту книгу?')">
-                        <i class="bi bi-trash"></i> Удалить
-                    </button>
-                </form>
+                @if(session('admin_mode'))
+                    <a href="{{ route('books.edit', $book->id) }}" class="btn btn-primary px-4">
+                        <i class="bi bi-pencil"></i> Редактировать
+                    </a>
+                    <form action="{{ route('books.destroy', $book->id) }}" method="POST" class="d-inline">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger px-4"
+                                onclick="return confirm('Удалить эту книгу?')">
+                            <i class="bi bi-trash"></i> Удалить
+                        </button>
+                    </form>
+                @endif
                 <a href="{{ route('books.index') }}" class="btn btn-outline-secondary px-4">
                     <i class="bi bi-arrow-left"></i> Назад
                 </a>
