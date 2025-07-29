@@ -9,14 +9,14 @@ return new class extends Migration
     public function up()
     {
         Schema::table('books', function (Blueprint $table) {
-            $table->softDeletes(); // Добавляет столбец deleted_at
+            $table->softDeletes(); 
         });
     }
 
     public function down()
     {
         Schema::table('books', function (Blueprint $table) {
-            $table->dropSoftDeletes(); // Удаляет столбец при откате
+            $table->dropSoftDeletes();
         });
     }
 };

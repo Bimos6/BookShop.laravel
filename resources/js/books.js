@@ -1,4 +1,3 @@
-// Плавная загрузка изображений
 document.addEventListener('DOMContentLoaded', function() {
     const images = document.querySelectorAll('.book-image');
     
@@ -20,7 +19,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Обработка сортировки
     document.querySelectorAll('[data-sort]').forEach(link => {
         link.addEventListener('click', function(e) {
             e.preventDefault();
@@ -29,14 +27,13 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Переключение режима администратора
 document.addEventListener('DOMContentLoaded', function() {
     const adminModeSwitch = document.getElementById('adminModeSwitch');
     
     if (adminModeSwitch) {
         adminModeSwitch.addEventListener('change', function() {
-            const checkAdminModeUrl = `${window.location.origin}/books/check-admin-mode`;
-            const toggleAdminModeUrl = `${window.location.origin}/books/toggle-admin-mode`;
+            const checkAdminModeUrl = `${window.location.origin}/admin/check-admin-mode`;
+            const toggleAdminModeUrl = `${window.location.origin}/admin/toggle-admin-mode`;
             
             fetch(toggleAdminModeUrl, {
                 method: 'POST',
@@ -56,9 +53,8 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
-        // Проверка режима каждые 2 секунды (опционально)
         setInterval(() => {
-            fetch(`${window.location.origin}/books/check-admin-mode`)
+            fetch(`${window.location.origin}/admin/check-admin-mode`)
                 .then(response => {
                     if (!response.ok) throw new Error('Network response was not ok');
                     return response.json();

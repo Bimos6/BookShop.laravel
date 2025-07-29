@@ -13,7 +13,6 @@ class Setting extends Model
     {
         parent::boot();
 
-        // Создаем запись по умолчанию при инициализации
         static::created(function ($setting) {
             if (Setting::count() === 1) {
                 $setting->update(['admin_mode' => false]);

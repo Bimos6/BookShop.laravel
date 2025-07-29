@@ -4,7 +4,6 @@
 
 @section('content')
 <div class="container py-4">
-    <!-- Переключатель режимов -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>Список книг</h1>
         <div class="d-flex align-items-center gap-3">
@@ -30,12 +29,10 @@
         </div>
     @endif
 
-    <!-- Фильтры и сортировка -->
     <div class="card mb-4">
         <div class="card-body">
             <form method="GET" action="{{ route('books.index') }}">
                 <div class="row g-3">
-                    <!-- Фильтр по жанру -->
                     <div class="col-md-4">
                         <label for="genre" class="form-label">Жанр</label>
                         <select class="form-select" id="genre" name="genre">
@@ -48,7 +45,6 @@
                         </select>
                     </div>
 
-                    <!-- Фильтр по страницам -->
                     <div class="col-md-4">
                         <label for="pages" class="form-label">Количество страниц</label>
                         <select class="form-select" id="pages" name="pages">
@@ -59,7 +55,6 @@
                         </select>
                     </div>
 
-                    <!-- Кнопки сортировки -->
                     <div class="col-md-4">
                         <label class="form-label">Сортировка</label>
                         <div class="btn-group w-100">
@@ -86,7 +81,6 @@
                         </div>
                     </div>
 
-                    <!-- Кнопки действия -->
                     <div class="col-12">
                         <div class="d-flex justify-content-between">
                             <button type="submit" class="btn btn-primary">
@@ -102,7 +96,6 @@
         </div>
     </div>
 
-    <!-- Список книг -->
     <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
         @forelse($books as $book)
         <div class="col">
@@ -161,7 +154,6 @@
         @endforelse
     </div>
 
-    <!-- Пагинация -->
     @if($books->hasPages())
     <div class="d-flex justify-content-center mt-4">
         {{ $books->appends(request()->query())->links() }}
@@ -169,7 +161,6 @@
     @endif
 </div>
 
-<!-- Подключение стилей и скриптов -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 @vite(['resources/css/books.css', 'resources/js/books.js'])
 @endsection
