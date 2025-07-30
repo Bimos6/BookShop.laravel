@@ -1,6 +1,6 @@
 FROM php:8.2-fpm
 
-# 1. Установка системных зависимостей + Node.js
+# 1. Установка системных зависимостей
 RUN set -eux; \
     sed -i 's/deb.debian.org/mirror.yandex.ru/g' /etc/apt/sources.list.d/debian.sources; \
     apt-get update; \
@@ -10,46 +10,48 @@ RUN set -eux; \
     apt-get clean; \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Установка Node.js
+# 2. Установка Node.js
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get install -y nodejs && \
     npm install -g npm
 
-# 2. Установка Composer
+# 3. Установка Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# 3. Рабочая директория
+# 4. Рабочая директория и структура папок
 WORKDIR /var/www
+RUN mkdir -p \
+    storage/framework/{sessions,views,cache} \
+    storage/logs \
+    bootstrap/cache && \
+    chown -R www-data:www-data /var/www && \
+    chmod -R 775 storage bootstrap/cache
 
-# 4. Копируем ВСЕ файлы проекта (включая package.json)
+# 5. Копирование только файлов зависимостей (без .npmrc)
+COPY composer.json composer.lock package.json package-lock.json ./
+
+# 6. Установка зависимостей
+RUN if [ -f package.json ]; then npm install; fi && \
+    composer install --no-interaction --no-scripts --optimize-autoloader
+
+# 7. Копирование остальных файлов
 COPY . .
 
-# 5. Установка Node.js зависимостей и сборка фронтенда
-RUN npm install && npm run build
-
-# 6. Создаем .env если отсутствует
+# 8. Настройка окружения Laravel
 RUN if [ ! -f .env ]; then \
     cp .env.example .env && \
     chown www-data:www-data .env && \
-    chmod 644 .env; \
-fi
+    php artisan key:generate; \
+    fi
 
-# 7. Установка PHP зависимостей
-RUN composer install --no-interaction --no-scripts --optimize-autoloader
+# 9. Фиксация прав
+RUN chown -R www-data:www-data /var/www && \
+    chmod -R 775 storage bootstrap/cache && \
+    touch database/database.sqlite && \
+    chmod 664 database/database.sqlite
 
-# 8. Генерация ключа приложения
-RUN php artisan key:generate
-
-# 9. Настройка прав
-RUN chown -R www-data:www-data storage bootstrap/cache database \
-    && chmod -R 775 storage bootstrap/cache \
-    && touch database/database.sqlite \
-    && chmod 664 database/database.sqlite
-
-# 10. Оптимизация Laravel
-RUN php artisan config:cache \
-    && php artisan route:cache \
-    && php artisan view:cache
+# 10. Сборка фронтенда (если нужно)
+RUN if [ -f package.json ] && [ -f vite.config.js ]; then npm run build; fi
 
 EXPOSE 9000
 CMD ["php-fpm"]
