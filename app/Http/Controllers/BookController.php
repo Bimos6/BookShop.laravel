@@ -36,6 +36,12 @@ class BookController extends Controller
         return redirect()->route('books.index')->with('success', 'Книга добавлена');
     }
 
+    public function create()
+    {
+        $authors = Author::orderBy('name')->get();
+        return view('books.create', compact('authors'));
+    }
+
     public function edit(Book $book)
     {
         $authors = Author::orderBy('name')->get();
