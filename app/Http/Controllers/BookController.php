@@ -1,4 +1,4 @@
-<?
+<?php
 
 namespace App\Http\Controllers;
 
@@ -9,10 +9,14 @@ use App\Actions\Books\UpdateBookAction;
 use App\Actions\Books\DeleteBookAction;
 use App\Http\Requests\BookRequest;
 use App\Services\BookService;
+use Illuminate\Http\Request;
 
 class BookController extends Controller
 {
-    public function __construct(
+    /**
+     * Display a listing of the resource.
+     */
+public function __construct(
         private BookService $bookService,
         private CreateBookAction $createBook,
         private UpdateBookAction $updateBook,
